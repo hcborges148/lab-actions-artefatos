@@ -1,0 +1,73 @@
+```yaml
+name: Pipeline Inteligente
+
+on:
+
+  # Regra 1 - Execução manual
+  workflow_dispatch:
+
+  # Regra 2 - Agendamento diário às 02:00
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Regras de push
+  push:
+
+    # Regra 3 - Apenas branches feature/*
+    branches:
+      - 'feature/**'
+
+    # Regra 4 - Monitorar src/, mas ignorar src/docs/
+    paths:
+      - 'src/**'
+      - '!src/docs/**'
+
+jobs:
+
+  job_gerador:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Baixar código do repositório
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Criar relatórios
+      - name: Gerar arquivos de relatório
+        run: |
+          mkdir saida_build
+          echo "Relatorio 1 gerado com sucesso" > saida_build/relatorio1.txt
+          echo "Relatorio 2 gerado com sucesso" > saida_build/relatorio2.txt
+
+      # Upload do artefato
+      - name: Upload dos artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: meus-relatorios-oficiais
+          path: saida_build/
+
+  job_auditoria:
+
+    # Espera o job anterior terminar
+    needs: job_gerador
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Download do artefato
+      - name: Download dos artefatos
+        uses: actions/download-artifact@v4
+        with:
+          name: meus-relatorios-oficiais
+
+      # Mostrar arquivos
+      - name: Listar arquivos
+        run: ls -R
+
+      # Mostrar conteúdo do relatório
+      - name: Exibir relatório
+        run: cat relatorio1.txt
+```
