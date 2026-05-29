@@ -1,4 +1,3 @@
-```yaml id="7vh1s1"
 name: Pipeline Inteligente
 
 on:
@@ -58,4 +57,3 @@ jobs:
 
       - name: Mostrar relatório
         run: cat relatorio1.txt
-```
